@@ -17,7 +17,7 @@ http.createServer((req, res) => {
   });
 }).listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
-  console.log(`Webhook endpoint: http://localhost:${PORT}${WEBHOOK_PATH}`);
+  console.log(`Webhook endpoint: http://127.0.0.1:${PORT}${WEBHOOK_PATH}`);
 });
 
 // Listen for specific events
