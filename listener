@@ -42,4 +42,3 @@ handler.on('issues', (event) => {
     );
 });
 
-
