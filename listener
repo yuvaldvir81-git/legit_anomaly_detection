@@ -1,8 +1,11 @@
 import http from 'node:http';
 import createHandler from 'github-webhook-handler';
+import { PushChecker } from './src/checkers/pushChecker';
+import { TeamsChecker } from './src/checkers/teamsChecker.ts';
+import { RepositoryChecker } from './src/checkers/repositoryChecker.ts';
 
 // Use environment variables for security
-const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET || 'uvlori81';
+const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET || 'test_secret';
 const WEBHOOK_PATH = '/webhook';
 const PORT = process.env.PORT || 3000;
 
@@ -12,6 +15,7 @@ const handler = createHandler({ path: WEBHOOK_PATH, secret: WEBHOOK_SECRET });
 // Create a basic HTTP server
 http.createServer((req, res) => {
   handler(req, res, (err) => {
+    console.log(err);
     res.statusCode = 404;
     res.end('no such location');
   });
@@ -26,18 +30,22 @@ handler.on('error', (err) => {
 });
 
 handler.on('push', (event) => {
-  console.log('Received a push event for %s to %s',
-    event.payload.repository.name,
-    event.payload.ref
-  );
-  // Add your custom logic here (e.g., trigger a deployment script)
+  const pushChecker = new PushChecker(event.payload);
+  if (!pushChecker.check()) {
+    console.log(pushChecker.getMessage());
+  }
 });
 
-handler.on('issues', (event) => {
-    console.log('Received an issue event for %s action=%s: #%d %s',
-      event.payload.repository.name,
-      event.payload.action,
-      event.payload.issue.number,
-      event.payload.issue.title
-    );
+handler.on('team', (event) => {
+  const teamsChecker = new TeamsChecker(event.payload);
+  if (!teamsChecker.check()) {
+    console.log(teamsChecker.getMessage());
+  }
+});
+
+handler.on('repository', (event) => {
+  const repositoryChecker = new RepositoryChecker(event.payload);
+  if (!repositoryChecker.check()) {
+    console.log(repositoryChecker.getMessage());
+  }
 });

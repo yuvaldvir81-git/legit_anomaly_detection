@@ -1,0 +1,14 @@
+import type { Checker } from './checkers/checker.ts';
+import { PushChecker } from './checkers/pushChecker.ts';
+import { RepositoryChecker } from './checkers/repositoryChecker.ts';
+import { TeamsChecker } from './checkers/teamsChecker.ts';
+
+export type CheckerConstructor = new (payload: any) => Checker;
+
+export function getAllCheckerClasses(): CheckerConstructor[] {
+    return [PushChecker, RepositoryChecker, TeamsChecker];
+}
+
+export function createCheckerInstances(payload: any): Checker[] {
+    return getAllCheckerClasses().map(CheckerClass => new CheckerClass(payload));
+}
