@@ -11,11 +11,16 @@ export class RepositoryChecker implements Checker {
     }
 
     check(): boolean {
-        if(this.payload?.repository && this.payload.action === 'deleted') {
-            const full_name: String = this.payload.repository.full_name;
-            if (Date.now() - new Date(this.payload.repository.created_at).getTime() < 10 * 60 * 1000) {
-                return false;
+        try {
+            if(this.payload?.repository && this.payload.action === 'deleted') {
+                const full_name: String = this.payload.repository.full_name;
+                if (Date.now() - new Date(this.payload.repository.created_at).getTime() < 10 * 60 * 1000) {
+                    return false;
+                }
             }
+        }
+        catch (error) {
+            return true; // Fail open on error
         }
         return true;
     }

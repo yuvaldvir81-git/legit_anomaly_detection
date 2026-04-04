@@ -11,11 +11,16 @@ export class PushChecker implements Checker {
     }
 
     check(): boolean {
-        if(this.payload?.head_commit) {
-            const timestamp: Date = new Date(this.payload.head_commit.timestamp);
-            if (isDateTimeBetweenHours(timestamp, 14, 0, 16, 0)) {
-                return false;
+        try {
+            if(this.payload?.head_commit) {
+                const timestamp: Date = new Date(this.payload.head_commit.timestamp);
+                if (isDateTimeBetweenHours(timestamp, 14, 0, 16, 0)) {
+                    return false;
+                }
             }
+        }
+        catch (error) {
+            return true; // Fail open on error
         }
         return true;
     }

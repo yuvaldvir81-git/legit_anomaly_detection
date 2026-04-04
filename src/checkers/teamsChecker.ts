@@ -11,11 +11,16 @@ export class TeamsChecker implements Checker {
     }
 
     check(): boolean {
-        if(this.payload?.team && this.payload.action === 'created') {
-            const name: String = this.payload.team.name;
-            if (name.toLowerCase().includes('hacker')) {
-                return false;
+        try {
+            if(this.payload?.team && this.payload.action === 'created') {
+                const name: String = this.payload.team.name;
+                if (name.toLowerCase().includes('hacker')) {
+                    return false;
+                }
             }
+        }
+        catch (error) {
+            return true; // Fail open on error
         }
         return true;
     }
